@@ -3,7 +3,7 @@
 """
 AXIOMES BASE LABS
 Time-Reversal Noise Witness — Qubit + TLS
-Version: 2.0.0
+Version: 2.1.0 (Optimisation Liouville)
 """
 
 from __future__ import annotations
@@ -28,13 +28,14 @@ log = logging.getLogger("AXIOMES.TimeReversal")
 ComplexMatrix = np.ndarray
 Hamiltonian = Callable[[float], ComplexMatrix]
 
+# ============================================================
+# OPÉRATEURS DE BASE
+# ============================================================
 SX = np.array([[0, 1], [1, 0]], dtype=np.complex128)
 SY = np.array([[0, -1j], [1j, 0]], dtype=np.complex128)
 SZ = np.array([[1, 0], [0, -1]], dtype=np.complex128)
-
 I2 = np.eye(2, dtype=np.complex128)
 I4 = np.eye(4, dtype=np.complex128)
-I8 = np.eye(8, dtype=np.complex128)
 
 SX_SUB = np.array([[0, 0, 0, 0], [0, 0, 1, 0], [0, 1, 0, 0], [0, 0, 0, 0]], dtype=np.complex128)
 SY_SUB = np.array([[0, 0, 0, 0], [0, 0, -1j, 0], [0, 1j, 0, 0], [0, 0, 0, 0]], dtype=np.complex128)
@@ -44,18 +45,16 @@ TX = np.kron(I4, SX)
 TY = np.kron(I4, SY)
 TZ = np.kron(I4, SZ)
 
-KET00 = np.array([1, 0, 0, 0], dtype=np.complex128)
 KET01 = np.array([0, 1, 0, 0], dtype=np.complex128)
-KET10 = np.array([0, 0, 1, 0], dtype=np.complex128)
-KET11 = np.array([0, 0, 0, 1], dtype=np.complex128)
-
 KET_TLS_G = np.array([1, 0], dtype=np.complex128)
-KET_TLS_E = np.array([0, 1], dtype=np.complex128)
 
 PSI0 = np.kron(KET01, KET_TLS_G)
 RHO0 = np.outer(PSI0, PSI0.conj())
-BELL_TARGET_4 = (KET01 - 1j * KET10) / np.sqrt(2)
+BELL_TARGET_4 = (KET01 - 1j * np.array([0, 0, 1, 0])) / np.sqrt(2)
 
+# ============================================================
+# VALIDATION
+# ============================================================
 def hermiticity_error(matrix: ComplexMatrix) -> float:
     return float(np.linalg.norm(matrix - matrix.conj().T, ord="fro"))
 
@@ -78,6 +77,9 @@ def bell_fidelity(rho8: ComplexMatrix) -> float:
     rho4 = partial_trace_tls(rho8)
     return float(np.real(np.vdot(BELL_TARGET_4, rho4 @ BELL_TARGET_4)))
 
+# ============================================================
+# BRUITS
+# ============================================================
 def generate_1f_noise(n: int, dt: float, seed: int, f_min: float = 1e-2) -> np.ndarray:
     rng = np.random.default_rng(seed)
     white = rng.normal(size=n)
@@ -96,6 +98,9 @@ def generate_rf_noise(t_eval: np.ndarray, freqs: tuple[float, ...], seed: int) -
     signal -= signal.mean()
     return signal / (signal.std() + 1e-15)
 
+# ============================================================
+# CONFIGURATION
+# ============================================================
 @dataclass(frozen=True)
 class WitnessConfig:
     t_span: tuple[float, float] = (0.0, 20.0)
@@ -115,9 +120,11 @@ class WitnessConfig:
     kappas: tuple[float, ...] = (0.0, 0.02, 0.05, 0.1)
     rtol: float = 1e-8
     atol: float = 1e-10
-    max_step: float = np.inf
     out_dir: Path = field(default_factory=lambda: Path("figures_tls"))
 
+# ============================================================
+# LINDBLAD & LIOUVILLE
+# ============================================================
 def build_lindblad_ops(cfg: WitnessConfig) -> list[ComplexMatrix]:
     sigma_minus = np.array([[0, 1], [0, 0]], dtype=np.complex128)
     operators = []
@@ -127,28 +134,45 @@ def build_lindblad_ops(cfg: WitnessConfig) -> list[ComplexMatrix]:
         operators.append(np.sqrt(cfg.gamma_phi_tls / 2.0) * TZ)
     return operators
 
-def lindblad_rhs(rho: ComplexMatrix, hamiltonian: ComplexMatrix, lindblad_ops: list[ComplexMatrix]) -> ComplexMatrix:
-    drho = -1j * (hamiltonian @ rho - rho @ hamiltonian)
+def build_liouvillian(hamiltonian: ComplexMatrix, lindblad_ops: list[ComplexMatrix]) -> ComplexMatrix:
+    dim = hamiltonian.shape[0]
+    I = np.eye(dim, dtype=np.complex128)
+    
+    # Partie Hamiltonienne (cohérente) : -i(I ⊗ H - H^T ⊗ I)
+    L_H = -1j * (np.kron(I, hamiltonian) - np.kron(hamiltonian.T, I))
+    
+    # Partie Dissipative
+    L_D = np.zeros((dim * dim, dim * dim), dtype=np.complex128)
     for L in lindblad_ops:
-        ld_l = L.conj().T @ L
-        drho += (L @ rho @ L.conj().T - 0.5 * (ld_l @ rho + rho @ ld_l))
-    return drho
+        L_dag_L = L.conj().T @ L
+        jump_term = np.kron(L.conj(), L)
+        anticomm_term = -0.5 * (np.kron(I, L_dag_L) + np.kron(L_dag_L.T, I))
+        L_D += jump_term + anticomm_term
+        
+    return L_H + L_D
 
 def evolve_rho(rho0: ComplexMatrix, hamiltonian: Hamiltonian, lindblad_ops: list[ComplexMatrix], t_span: tuple[float, float], t_eval: np.ndarray, *, rtol: float = 1e-8, atol: float = 1e-10, max_step: float = np.inf) -> np.ndarray:
     dim = rho0.shape[0]
-    def pack(m): return np.concatenate([m.real.ravel(), m.imag.ravel()])
-    def unpack(v): return (v[:dim*dim] + 1j * v[dim*dim:]).reshape(dim, dim)
+    
+    # Vectorisation de l'état initial (ordre Fortran)
+    y0 = rho0.ravel(order='F')
+    
     def rhs(t, y):
-        rho = unpack(y)
-        H = hamiltonian(t)
-        drho = lindblad_rhs(rho, H, lindblad_ops)
-        return pack(drho)
-    sol = solve_ivp(rhs, t_span, pack(rho0), t_eval=t_eval, method="DOP853", rtol=rtol, atol=atol, max_step=max_step)
-    if not sol.success:
-        raise RuntimeError(f"Échec intégration : {sol.message}")
-    size = dim * dim
-    return np.array([(col[:size] + 1j * col[size:]).reshape(dim, dim) for col in sol.y.T])
+        H_t = hamiltonian(t)
+        L_t = build_liouvillian(H_t, lindblad_ops)
+        return L_t @ y
+        
+    solution = solve_ivp(rhs, t_span, y0, t_eval=t_eval, method="DOP853", rtol=rtol, atol=atol, max_step=max_step)
+    
+    if not solution.success:
+        raise RuntimeError(f"Échec intégration : {solution.message}")
+        
+    # Dé-vectorisation
+    return np.array([col.reshape((dim, dim), order='F') for col in solution.y.T])
 
+# ============================================================
+# EXPÉRIENCE
+# ============================================================
 def build_experiment(cfg: WitnessConfig, seed: int):
     t_eval = np.linspace(cfg.t_span[0], cfg.t_span[1], cfg.n_points)
     dt = float(t_eval[1] - t_eval[0])
@@ -200,7 +224,7 @@ def run_witness(cfg: WitnessConfig):
     validate_static_operators()
     cfg.out_dir.mkdir(parents=True, exist_ok=True)
     print("=" * 68)
-    print("AXIOMES BASE LABS — TIME-REVERSAL NOISE WITNESS")
+    print("AXIOMES BASE LABS — TIME-REVERSAL NOISE WITNESS (Liouville)")
     print("=" * 68)
     results = {}
     for kappa in cfg.kappas:
