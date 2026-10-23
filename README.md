@@ -2,7 +2,7 @@
 
 **Auteur :** Xioranne Lessard
 **Cadre :** Architecture logicielle quantique et topologique unifiée
-**Version :** 2.0.0
+**Version :** 2.1.0
 
 ## 1. Vision : L'Ordre Implicite du Contrôle Quantique
 Le paradigme actuel du contrôle quantique optimise la fidélité des portes logiques de manière isolée, considérant le bruit comme un ennemi statistique. Axioms Base Labs propose un renversement phénoménologique : la robustesse de l'information quantique ne s'obtient pas en luttant contre l'environnement, mais en la structurant géométriquement sous forme solitonique. 
@@ -23,7 +23,7 @@ Le système repose sur des briques computationnelles souveraines, exécutables l
 
 ### Les Expériences (Racine du projet)
 *   **`master_pipeline.py`** : Le chef d'orchestre de base. Simule une porte X et fait un Monte-Carlo sur 100 réalisations pour tester la robustesse au bruit.
-*   **`time_reversal_witness_tls.py`** : Modèle avancé (8x8). Ajoute un défaut matériel (TLS) et la dissipation via l'équation de Lindblad. Calcule la fidélité de Bell avec une correction hermitienne stricte et un contrôle de réversibilité unitaire.
+*   **`time_reversal_witness_tls.py`** : Modèle avancé (8x8). Ajoute un défaut matériel (TLS) et la dissipation via l'équation de Lindblad. **Optimisation mathématique : la dissipation est vectorisée dans l'espace de Liouville (super-opérateur 64x64), permettant une intégration plus rapide et plus stable.** Calcule la fidélité de Bell avec une correction hermitienne stricte et un contrôle de réversibilité unitaire.
 *   **`scan_multi_tls.py`** : Scan automatique. Balaye le nombre de TLS (1 et 2) et la force de couplage pour générer des cartes de chaleur montrant l'impact des défauts sur la cohérence quantique.
 *   **`visualisation.py`** : Module de génération des figures scientifiques.
 
@@ -37,6 +37,9 @@ Les propriétés annoncées sont vérifiées par des tests automatisés. Voici l
 *   **Validation de l'hermiticité des Hamiltoniens** : 
     *   *Implémentation :* Fonction `validate_hamiltonian` et `validate_static_operators`.
     *   *Preuve :* Les tests prouvent que les matrices non-hermitiennes sont rejetées (erreur fatale).
+*   **Vectorisation de Liouville** : 
+    *   *Implémentation :* Construction de la matrice de Liouville (64x64) avec `np.kron` et intégration d'un vecteur d'état de taille 64 (ordre Fortran).
+    *   *Preuve :* Le code résout exactement la même physique, mais avec un gain d'efficacité computationnelle en évitant les produits matriciels redondants.
 *   **Robustesse au bruit (Monte-Carlo)** : 
     *   *Implémentation :* Boucle sur plusieurs itérations avec bruit 1/f et RF.
     *   *Preuve :* La simulation affiche l'écart-type de la fidélité, démontrant statistiquement l'impact du bruit sur la porte quantique.
