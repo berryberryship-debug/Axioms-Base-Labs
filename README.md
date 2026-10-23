@@ -31,10 +31,11 @@ Le système repose sur des briques computationnelles souveraines, exécutables l
 
 ## 3.1 Comparaison des Méthodes Numériques (Validation Croisée)
 
-Pour garantir la robustesse de nos résultats, l'évolution de la matrice densité a été implémentée selon deux formalismes mathématiques distincts. Cette approche permet de valider que la physique simulée ne dépend pas de l'algorithme choisi.
+## 3.1 Approches Numériques pour la Dissipation
 
-*   **Méthode A (Commutateurs Directs)** : Résolution de l'équation de Lindblad avec des matrices 8x8 via `solve_ivp`. Méthode classique, rapide, utilisée pour générer les figures principales.
-*   **Méthode B (Espace de Liouville)** : Vectorisation de la matrice densité en un vecteur de taille 64, et construction du super-opérateur de Liouville (64x64) à chaque pas de temps.
+Le module `time_reversal_witness_tls.py` implémente deux formalismes distincts pour la résolution de l'équation maîtresse de Lindblad :
+*   **Méthode Directe** : Calcul des commutateurs avec des matrices de densité 8x8. Utilisée pour la génération des résultats principaux.
+*   **Méthode de Liouville** : Vectorisation de la matrice densité et construction d'un super-opérateur 64x64. Cette approche permet une intégration alternative, bien que plus coûteuse en temps de calcul en raison de la variation temporelle du Hamiltonien (chirp).
 
 **Résultats comparatifs pour le contrôle (kappa = 0.0, sans chirp) :**
 
