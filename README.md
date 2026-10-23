@@ -2,7 +2,7 @@
 
 **Auteur :** Xioranne Lessard
 **Cadre :** Architecture logicielle quantique et topologique unifiée
-**Version :** 1.2.0
+**Version :** 2.0.0
 
 ## 1. Vision : L'Ordre Implicite du Contrôle Quantique
 Le paradigme actuel du contrôle quantique optimise la fidélité des portes logiques de manière isolée, considérant le bruit comme un ennemi statistique. Axioms Base Labs propose un renversement phénoménologique : la robustesse de l'information quantique ne s'obtient pas en luttant contre l'environnement, mais en la structurant géométriquement sous forme solitonique. 
@@ -14,46 +14,37 @@ Ce projet matérialise l'intersection exacte entre la dynamique de Hilbert (disc
 Le système repose sur des briques computationnelles souveraines, exécutables localement et verrouillées contre la décohérence numérique.
 
 ### Le Noyau Quantique (`core/`)
-*   **`quantum_core.py`** : Noyau dynamique quantique. Résout l'équation de Schrödinger dépendante du temps via `scipy.integrate.solve_ivp`. Inclut la validation stricte de l'hermiticité des Hamiltoniens et le contrôle de la norme des états.
-*   **`pulses.py`** : Génération d'impulsions de contrôle (Gaussienne tronquée, DRAG avec dérivée analytique exacte, Sinusoïdale, Composites).
-*   **`noise.py`** : Générateur de bruit coloré 1/f (bruit rose) reproductible par générateur moderne PCG64 (`np.random.default_rng`).
-*   **`metrics.py`** : Métrologie quantique. Calcul de la fidélité et de l'infidélité des états purs avec validation de normalisation.
-*   **`moire.py`** : Champ topologique Moiré avec échantillonnage spatial. Implémente une stabilité numérique stricte (gestion des NaN/Inf et broadcasting).
-*   **`validation.py`** : Suite de tests unitaires indépendants validant la convergence du noyau.
+*   **`quantum_core.py`** : Noyau dynamique quantique. Résout l'équation de Schrödinger via `solve_ivp`. Inclut la validation stricte de l'hermiticité.
+*   **`pulses.py`** : Génération d'impulsions (Gaussienne, DRAG, Sinusoïdale, Composites).
+*   **`noise.py`** : Générateur de bruit coloré 1/f (bruit rose).
+*   **`metrics.py`** : Métrologie quantique (Fidélité, Infidélité).
+*   **`moire.py`** : Champ topologique Moiré avec stabilité numérique.
+*   **`validation.py`** : Suite de tests unitaires validant la convergence du noyau.
 
-### L'Orchestrateur (`master_pipeline.py`)
-Le script racine `master_pipeline.py` fait le pont entre tous les modules. 
-*   **Calibration :** Calibration de l'aire de l'impulsion pour une porte X (rotation de \(\pi\)).
-*   **Simulation de référence :** Évolution sans bruit avec tolérances strictes (`rtol=1e-10`, `atol=1e-12`).
-*   **Étude Monte-Carlo :** Injection de bruit 1/f multiplicatif sur l'amplitude de contrôle. Évaluation de la robustesse statistique sur 100 réalisations indépendantes.
+### Les Expériences (Racine du projet)
+*   **`master_pipeline.py`** : Le chef d'orchestre de base. Simule une porte X et fait un Monte-Carlo sur 100 réalisations pour tester la robustesse au bruit.
+*   **`test.py`** : Test de validation rapide du moteur quantique (vérification de la norme et des états).
+*   **`time_reversal_witness.py`** : Première implémentation du témoin d'inversion temporelle (modèle simple à 2 niveaux). Montre la sensibilité de la phase au profil temporel du bruit.
+*   **`time_reversal_witness_tls.py`** : Modèle avancé (8x8). Ajoute un défaut matériel (TLS) et la dissipation via l'équation de Lindblad. Calcule la fidélité de Bell avec une correction hermitienne stricte.
+*   **`scan_multi_tls.py`** : Scan automatique (le "Gargantuesque"). Balaye le nombre de TLS (1 et 2) et la force de couplage pour générer des cartes de chaleur montrant l'impact des défauts sur la cohérence quantique.
+*   **`visualisation.py`** : Module de génération des figures scientifiques (Impulsion, Évolution, Monte-Carlo).
 
 ## 3. Validation et Preuves Numériques (Distinction Code/Preuve)
 
-Les propriétés annoncées dans ce document sont vérifiées par des tests automatisés (le fichier `core/validation.py`). Voici la distinction entre ce que le code implémente et ce que les tests démontrent :
+Les propriétés annoncées sont vérifiées par des tests automatisés. Voici la distinction entre ce que le code implémente et ce que les tests démontrent :
 
-*   **Stabilité numérique et conservation de la norme :** 
+*   **Stabilité numérique et conservation de la norme** : 
     *   *Implémentation :* L'intégrateur `solve_ivp` avec tolérances strictes.
-    *   *Preuve :* Le test `test_analytic_solution` vérifie que l'erreur de norme reste inférieure à `1e-7` sur toute la trajectoire.
-*   **Validation de l'hermiticité des Hamiltoniens :** 
-    *   *Implémentation :* Fonction `validate_hamiltonian`.
-    *   *Preuve :* Le test `test_invalid_inputs` prouve que les matrices non-hermitiennes sont rejetées avec une `ValueError`.
-*   **Robustesse au bruit (Monte-Carlo) :** 
-    *   *Implémentation :* Boucle de 100 itérations avec bruit 1/f.
+    *   *Preuve :* Le test `test_analytic_solution` vérifie que l'erreur de norme reste inférieure à `1e-7`.
+*   **Validation de l'hermiticité des Hamiltoniens** : 
+    *   *Implémentation :* Fonction `validate_hamiltonian` et `validate_static_operators`.
+    *   *Preuve :* Les tests prouvent que les matrices non-hermitiennes sont rejetées (erreur fatale).
+*   **Robustesse au bruit (Monte-Carlo)** : 
+    *   *Implémentation :* Boucle sur 100 itérations avec bruit 1/f et RF.
     *   *Preuve :* La simulation affiche l'écart-type de la fidélité, démontrant statistiquement l'impact du bruit sur la porte quantique.
 
 ## 4. Exécution du Pipeline
 
 ### Installation
 ```bash
-## 5. Résultats Visuels
-
-Voici les figures clés générées par les simulations :
-
-### Impulsion de contrôle
-![Impulsion](lien_vers_ton_image_01)
-
-### Évolution du Qubit
-![Évolution](lien_vers_ton_image_02)
-
-### Distribution de la Fidélité
-![Fidélité](lien_vers_ton_image_03)pip install numpy scipy
+pip install numpy scipy matplotlib tqdm
