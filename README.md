@@ -45,4 +45,15 @@ Les propriétés annoncées dans ce document sont vérifiées par des tests auto
 
 ### Installation
 ```bash
-pip install numpy scipy
+## 5. Résultats Visuels
+
+Voici les figures clés générées par les simulations :
+
+### Impulsion de contrôle
+![Impulsion](lien_vers_ton_image_01)
+
+### Évolution du Qubit
+![Évolution](lien_vers_ton_image_02)
+
+### Distribution de la Fidélité
+![Fidélité](lien_vers_ton_image_03)pip install numpy scipy
