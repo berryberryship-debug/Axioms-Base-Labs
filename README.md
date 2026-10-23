@@ -3,8 +3,6 @@
 **Auteur :** Xioranne (Xio) / Kush
 **Cadre :** Architecture logicielle quantique et topologique unifiée
 
-![Logo Axioms Base Labs](https://raw.githubusercontent.com/berryberryship-debug/Berry-Project/main/logo.png)
-
 ## 1. Vision : L'Ordre Implicite du Contrôle Quantique
 Le paradigme actuel du contrôle quantique optimise la fidélité des portes logiques de manière isolée, considérant le bruit comme un ennemi statistique. Axioms Base Labs propose un renversement phénoménologique : la robustesse de l'information quantique ne s'obtient pas en luttant contre l'environnement, mais en la structurant géométriquement sous forme solitonique. 
 
