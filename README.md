@@ -55,10 +55,8 @@ Les simulations sur laptop (modèle TLS avec Lindblad) ont généré les résult
 
 ## 5. Exécution du Pipeline
 
-### Installation
+### Installation et lancement
 ```bash
+pip install numpy scipy matplotlib
 python master_pipeline.py
-
 python scan_multi_tls.py
-
-Descends en bas de la page et clique sur **`Commit changes`**. Ton README sera parfaitement aligné avec le code que tu viens de mettre à jour.pip install numpy scipy matplotlib
