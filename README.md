@@ -5,9 +5,6 @@
 
 ![Logo Axioms Base Labs](https://raw.githubusercontent.com/berryberryship-debug/Berry-Project/main/logo.png)
 
-## 🔗 Projets Liés
-*   [Moteur Quantique & Cognitif (Projet Berry)](https://github.com/berryberryship-debug/Berry-Project)
-
 ## 1. Vision : L'Ordre Implicite du Contrôle Quantique
 Le paradigme actuel du contrôle quantique optimise la fidélité des portes logiques de manière isolée, considérant le bruit comme un ennemi statistique. Axioms Base Labs propose un renversement phénoménologique : la robustesse de l'information quantique ne s'obtient pas en luttant contre l'environnement, mais en la structurant géométriquement sous forme solitonique. 
 
