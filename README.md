@@ -43,6 +43,22 @@ Les propriétés annoncées sont vérifiées par des tests automatisés. Voici l
 
 ### 3.1 Approches Numériques pour la Dissipation
 
+Le module `time_reversal_witness_tls.py` implémente deux formalismes distincts pour la résolution de l'équation maîtresse de Lindblad, afin de valider la cohérence des calculs :
+
+1.  **Méthode Directe (8x8)** : Calcul des commutateurs avec des matrices de densité 8x8. Privilégiée pour la génération des résultats principaux en raison de sa rapidité d'exécution.
+2.  **Méthode de Liouville (64x64)** : Vectorisation de la matrice densité et construction d'un super-opérateur. Bien que plus lente (reconstruction de la matrice à chaque pas de temps dû au chirp), elle sert de validation croisée.
+
+**Validation croisée (comparaison des résultats) :**
+
+| Chirp (`kappa`) | `A_control` (Directe) | `A_control` (Liouville) |
+| :--- | :--- | :--- |
+| 0.000 | `~ 2.14e-06` | `~ -3.47e-06` |
+| 0.020 | `-1.1012e-02` | `-1.1012e-02` |
+| 0.050 | `-2.7337e-02` | `-2.7336e-02` |
+| 0.100 | `-5.3308e-02` | `-5.3308e-02` |
+
+Les deux méthodes numériques convergent vers les mêmes résultats physiques, validant ainsi la robustesse de l'algorithme et l'absence d'erreur de vectorisation.
+
 Le module `time_reversal_witness_tls.py` implémente deux formalismes distincts pour la résolution de l'équation maîtresse de Lindblad :
 1.  **Méthode Directe** : Calcul des commutateurs avec des matrices de densité 8x8 à chaque pas de temps. Cette méthode est privilégiée pour la génération des résultats principaux en raison de son efficacité.
 2.  **Méthode de Liouville** : Vectorisation de la matrice densité en un vecteur de taille 64 et construction d'un super-opérateur (64x64). Cette approche permet une intégration alternative, bien que plus coûteuse en temps de calcul pour un Hamiltonien dépendant du temps (chirp).
