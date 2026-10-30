@@ -33,8 +33,6 @@ Le système repose sur des briques computationnelles souveraines, exécutables l
 *   **`v101_magnon_packet.py`** : Propagation dynamique spatio-temporelle d'un paquet d'ondes de spin via FFT.
 *   **`v102_magnon_dmi.py`** : Effet Dzyaloshinskii-Moriya (DMI) et transition vers un fondamental spiralé (mode mou et mode de Goldstone).
 
----
-
 ## 3. Validation et Preuves Numériques
 
 Les propriétés annoncées sont vérifiées par des tests automatisés. Voici la distinction entre ce que le code implémente et ce que les tests démontrent :
@@ -62,8 +60,6 @@ Le module `time_reversal_witness_tls.py` implémente deux formalismes distincts 
 
 *Les deux méthodes convergent, validant l'absence d'erreur de vectorisation.*
 
----
-
 ## 4. Résultats Scientifiques
 
 ### 4.1 Résultats Quantiques (TLS avec Lindblad)
@@ -72,7 +68,6 @@ Le module `time_reversal_witness_tls.py` implémente deux formalismes distincts 
 *   **Witness d'inversion temporelle** : Reste robuste (autour de 0.95 - 1.0) malgré la présence de bruit.
 
 ### 4.2 Résultats Magnétiques (Matière Condensée)
-
 **V100 — Dispersion des Magnons 1D**
 **[Démontré analytiquement]** Théorie linéaire des ondes de spin. Calcul de l'énergie \(E(q)\) et de la vitesse physique.
 **[Vérifié numériquement]** La masse effective est calculée en unités SI. La dispersion est quadratique près de \(\Gamma\) (contrairement aux phonons).
@@ -84,24 +79,10 @@ Le module `time_reversal_witness_tls.py` implémente deux formalismes distincts 
 **[Démontré analytiquement]** La DMI brise la symétrie d'inversion. L'état ferromagnétique colinéaire devient instable (mode mou) si le champ externe ne compense pas la chiralité. 
 **[Observé numériquement]** Les trois régimes sont tracés : instabilité sans champ, stabilisation avec champ critique \(h_c\), et formation spontanée d'une spirale (hélicoïde) avec un mode de Goldstone sans gap à \(q=0\) (\(E(q) = 2S\sqrt{J^2+D^2}|\sin(qa/2)|\)).
 
----
-
 ## 5. Exécution du Pipeline
 
 ### Installation et lancement
 ```bash
-python v100_magnon_dispersion.py
-python v101_magnon_packet.py
-python v102_magnon_dmi.py
-***
-
-### 💡 Pourquoi cette version est meilleure :
-1. **Plus de doublon** : Le paragraphe répété sur Liouville a été supprimé.
-2. **Structure claire** : On voit immédiatement que le dépôt possède deux grandes familles de moteurs (le Noyau Quantique et le module Magnétisme).
-3. **Cohérence épistémique** : J'ai ajouté les niveaux de preuve (`[Démontré analytiquement]`, `[Vérifié numériquement]`) pour la partie magnons, ce qui garde la même rigueur que ton texte sur le TLS.
-4. **Mise à jour des versions** : J'ai passé la version à `2.2.0` pour marquer cette belle évolution.
-
-Tu n'as plus qu'à copier-coller ce bloc dans ton `README.md` sur GitHub !
 pip install numpy scipy matplotlib
 python master_pipeline.py
 python scan_multi_tls.py
