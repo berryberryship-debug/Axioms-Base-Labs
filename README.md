@@ -61,8 +61,6 @@ Le module `time_reversal_witness_tls.py` implémente deux formalismes distincts 
 
 *Les deux méthodes numériques convergent vers les mêmes résultats physiques, validant ainsi la robustesse de l'algorithme et l'absence d'erreur de vectorisation.*
 
----
-
 ## 4. Résultats Scientifiques
 
 ### 4.1 Résultats Quantiques (TLS avec Lindblad)
@@ -76,6 +74,9 @@ Le module `time_reversal_witness_tls.py` implémente deux formalismes distincts 
 **[Modèle et méthode]** Construction d'un skyrmion de Néel axisymétrique sur un domaine carré fini, avec un profil radial régularisé (évitant la singularité en r=0). Le calcul de la charge topologique \(Q\) est effectué selon deux méthodes indépendantes : Différences finies (FD) d'ordre 2, et méthode exacte de Berg-Lüscher (BL) basée sur les angles solides sphériques.
 **[Vérifié numériquement]** Convergence croisée des deux méthodes (l'écart tend vers 0 avec N). L'étude multi-résolution (N=101 à 601) estime l'ordre de convergence \(p\) de la méthode FD. Un contrôle de bord vérifie la polarisation \(+z\).
 **[Limite]** Domaine carré fini et ouvert. Pas de minimisation énergétique ni de dynamique temporelle. La charge BL n'est pas nécessairement un entier exact sur un domaine ouvert.
+**[Références V99]** 
+- Berg, B., & Lüscher, M. (1981). *Definition and statistical distributions of a topological number in the lattice O(3) sigma-model*. Nuclear Physics B.
+- Nagaosa, N., & Tokura, Y. (2013). *Topological properties and dynamics of magnetic skyrmions*. Nature Nanotechnology.
 
 **V100 — Dispersion des Magnons 1D**
 **[Démontré analytiquement]** Théorie linéaire des ondes de spin. Calcul de l'énergie \(E(q)\) et de la vitesse physique.
@@ -87,6 +88,9 @@ Le module `time_reversal_witness_tls.py` implémente deux formalismes distincts 
 **V102 — Effet Dzyaloshinskii-Moriya (DMI)**
 **[Démontré analytiquement]** La DMI brise la symétrie d'inversion. L'état ferromagnétique colinéaire devient instable (mode mou) si le champ externe ne compense pas la chiralité. 
 **[Observé numériquement]** Les trois régimes sont tracés : instabilité sans champ, stabilisation avec champ critique \(h_c\), et formation spontanée d'une spirale (hélicoïde) avec un mode de Goldstone sans gap à \(q=0\) (\(E(q) = 2S\sqrt{J^2+D^2}|\sin(qa/2)|\)).
+**[Références V102]**
+- Dzyaloshinskii, I. E. (1958). *A thermodynamic theory of "weak" ferromagnetism of antiferromagnetics*. Journal of Physics and Chemistry of Solids.
+- Moriya, T. (1960). *Anisotropic superexchange interaction and weak ferromagnetism*. Physical Review.
 
 ## 5. Exécution du Pipeline
 
