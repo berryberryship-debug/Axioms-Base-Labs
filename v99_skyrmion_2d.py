@@ -17,12 +17,17 @@ Texture :
 Convention :
     Q = (1 / 4π) integral n · (∂x n × ∂y n) dx dy
 
+Références :
+    - Berg, B., & Lüscher, M. (1981). "Definition and statistical distributions of a topological number in the lattice O(3) sigma-model." Nuclear Physics B, 190(2), 412-424. (Méthode exacte Berg-Lüscher).
+    - Dzyaloshinskii, I. E. (1958). "A thermodynamic theory of 'weak' ferromagnetism of antiferromagnetics." Journal of Physics and Chemistry of Solids, 4(4), 241-255. (Mécanisme physique sous-jacent).
+    - Moriya, T. (1960). "Anisotropic superexchange interaction and weak ferromagnetism." Physical Review, 120(1), 91. (Formalisation de l'interaction DMI).
+    - Nagaosa, N., & Tokura, Y. (2013). "Topological properties and dynamics of magnetic skyrmions." Nature Nanotechnology, 8(12), 899-911. (Revue générale sur la topologie des skyrmions).
+
 Limites :
     - Domaine carré fini et ouvert.
     - Pas de minimisation énergétique.
     - Pas de dynamique temporelle.
-    - La charge BL sur un domaine ouvert n'est pas
-      nécessairement un entier exact.
+    - La charge BL sur un domaine ouvert n'est pas nécessairement un entier exact.
 """
 
 import matplotlib
@@ -434,7 +439,7 @@ im0 = axes[0].imshow(
     vmax=1
 )
 
-axes[0].set_title(r"Composante $n_z$")
+axes[0].set_title(r"Composante \(n_z\)")
 axes[0].set_xlabel("x")
 axes[0].set_ylabel("y")
 axes[0].set_aspect("equal")
@@ -470,7 +475,7 @@ im2 = axes[2].imshow(
     vmax=lim
 )
 
-axes[2].set_title(r"Densité topologique $q(x,y)$")
+axes[2].set_title(r"Densité topologique \(q(x,y)\)")
 axes[2].set_xlabel("x")
 axes[2].set_ylabel("y")
 axes[2].set_aspect("equal")
